@@ -1,4 +1,4 @@
-const UPDATE_SPEED = 500;
+const UPDATE_SPEED = 400;
 const GRAPH_HEIGHT = 7;
 const GRAPH_WIDTH = 52;
 const SQUARE_COUNT = GRAPH_HEIGHT * GRAPH_WIDTH;
@@ -6,7 +6,7 @@ const SQUARE_COUNT = GRAPH_HEIGHT * GRAPH_WIDTH;
 var gameTiles = Array.from(Array(GRAPH_HEIGHT), () => new Array(GRAPH_WIDTH));
 
 function getRandomDirection() { return (Math.random() < 0.5 ? -1 : 1)}
-function getRandomAngle() { return Math.round(1 - Math.random() * 2); }
+function getRandomAngle() { return Math.round(1 + Math.random()) * getRandomDirection(); }
 const ball = {
     xPos: GRAPH_WIDTH / 2,
     yPos: GRAPH_HEIGHT / 2,
@@ -16,18 +16,34 @@ const ball = {
         this.yPos += this.direction;
         this.xPos += this.angle;
     },
+    reset: function() {
+        this.xPos = GRAPH_WIDTH / 2;
+        this.yPos = GRAPH_HEIGHT / 2;
+        this.direction = getRandomDirection();
+        this.angle = getRandomAngle();
+    },
+    bounce: function() {
+        this.direction = -this.direction;
+        this.yPos += this.direction;
+        this.xPos -= this.angle;
+        this.angle = getRandomAngle();
+        this.updatePosition();
+    },
     handleCollisions: function() {
-        if (this.xPos < 0 || this.xPos > GRAPH_WIDTH) {
+        if (this.xPos < 0 || this.xPos >= GRAPH_WIDTH) {
             this.angle = -this.angle;
-            this.xPos += this.angle;
+            this.xPos += this.angle * 2;
         }
         if (this.yPos < 0 || this.yPos > GRAPH_HEIGHT) {
-            this.xPos = GRAPH_WIDTH / 2;
-            this.yPos = GRAPH_HEIGHT / 2;
-            this.direction = getRandomDirection();
-            this.angle = getRandomAngle();
+            //this.reset();
+            this.bounce();
         }
     }
+}
+
+const player1 = {
+    xPos: GRAPH_WIDTH / 2,
+    yPos: 0,
 }
 
 function addSquares() {
