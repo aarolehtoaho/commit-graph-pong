@@ -2,8 +2,11 @@ const UPDATE_SPEED = 400;
 const GRAPH_HEIGHT = 7;
 const GRAPH_WIDTH = 52;
 const SQUARE_COUNT = GRAPH_HEIGHT * GRAPH_WIDTH;
+const UP = -1;
+const DOWN = 1;
 
 var gameTiles = Array.from(Array(GRAPH_HEIGHT), () => new Array(GRAPH_WIDTH));
+function getRandomColor() { return 1 + Math.floor(Math.random() * 3); }
 function drawColor(x, y, level) {
     const intX = Math.floor(x);
     const intY = Math.floor(y);
@@ -15,16 +18,36 @@ function drawColor(x, y, level) {
 }
 
 const player1 = {
-    xPos: Math.floor(GRAPH_WIDTH / 2) + 3,
+    xPos: Math.floor(GRAPH_WIDTH / 2),
     yPos: 0,
-    update: function() {
+    draw: function(colored) {
         for (var i = -1; i <= 1; i++) {
-            drawColor(this.xPos + i, this.yPos, 1 + Math.floor(Math.random() * 3))
+            drawColor(this.xPos + i, this.yPos, colored ? getRandomColor() : 0);
+        }
+    },
+    ballComing: function() {
+        return ball.direction == UP;
+    },
+    update: function() {
+        if (this.ballComing() && this.xPos != ball.xPos) {
+            this.draw(false);
+            var speed = Math.round(Math.abs(ball.angle) * (Math.abs(this.xPos - ball.xPos) > 2 ? 1.5 : 1));
+            var moveDistance = speed * (this.xPos < ball.xPos ? 1 : -1);
+            this.xPos += moveDistance;
+            if (this.xPos < 1) {
+                this.xPos = 1;
+            } else if (this.xPos > GRAPH_WIDTH - 2) {
+                this.xPos = GRAPH_WIDTH - 2;
+            }
+            this.draw(true);
         }
     }
 }
 const player2 = Object.assign({}, player1);
 player2.yPos = GRAPH_HEIGHT - 1;
+player2.ballComing = function() {
+    return ball.direction == DOWN;
+};
 
 function getRandomDirection() { return (Math.random() < 0.5 ? -1 : 1)}
 function getRandomAngle() { return Math.round(1 + Math.random()) * getRandomDirection(); }
@@ -51,23 +74,26 @@ const ball = {
         this.updatePosition();
     },
     handleCollisions: function() {
-        if (this.xPos < 0 || this.xPos >= GRAPH_WIDTH) {
+        var sideCollision = this.xPos < 0 || this.xPos >= GRAPH_WIDTH;
+        if (sideCollision) {
             this.angle = -this.angle;
             this.xPos = Math.floor(this.xPos + this.angle * 2);
         }
-        if (this.yPos < 0 || this.yPos >= GRAPH_HEIGHT) {
+        var outOfMap = this.yPos < 0 || this.yPos >= GRAPH_HEIGHT;
+        if (outOfMap) {
             this.reset();
         }
-        if (this.yPos == player1.yPos && (this.xPos <= player1.xPos + 1) && (this.xPos >= player1.xPos - 1)) {
+        var player1Collision = this.yPos == player1.yPos && (this.xPos <= player1.xPos + 1) && (this.xPos >= player1.xPos - 1);
+        var player2Collision = this.yPos == player2.yPos && (this.xPos <= player2.xPos + 1) && (this.xPos >= player2.xPos - 1);
+        if (player1Collision || player2Collision) {
             this.bounce();
-            console.log("bounced");
         }
     },
     update: function() {
         drawColor(this.xPos, this.yPos, 0);
         this.updatePosition();
         this.handleCollisions();
-        drawColor(this.xPos, this.yPos, 1 + Math.floor(Math.random() * 3));     
+        drawColor(this.xPos, this.yPos, getRandomColor());     
     }
 }
 
@@ -101,6 +127,8 @@ function updateGame() {
     */
 }
 
+player1.draw(true);
+player2.draw(true);
 addSquares();
 setInterval(() => {
     updateGame();
