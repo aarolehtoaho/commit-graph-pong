@@ -4,46 +4,71 @@ const GRAPH_WIDTH = 52;
 const SQUARE_COUNT = GRAPH_HEIGHT * GRAPH_WIDTH;
 
 var gameTiles = Array.from(Array(GRAPH_HEIGHT), () => new Array(GRAPH_WIDTH));
+function drawColor(x, y, level) {
+    const intX = Math.floor(x);
+    const intY = Math.floor(y);
+    if (intX >= 0 && intX < GRAPH_WIDTH && intY >= 0 && intY < GRAPH_HEIGHT) {
+        gameTiles[intY][intX] = level;
+    } else {
+        console.log("Index out of bounds");
+    }
+}
+
+const player1 = {
+    xPos: Math.floor(GRAPH_WIDTH / 2) + 3,
+    yPos: 0,
+    update: function() {
+        for (var i = -1; i <= 1; i++) {
+            drawColor(this.xPos + i, this.yPos, 1 + Math.floor(Math.random() * 3))
+        }
+    }
+}
+const player2 = Object.assign({}, player1);
+player2.yPos = GRAPH_HEIGHT - 1;
 
 function getRandomDirection() { return (Math.random() < 0.5 ? -1 : 1)}
 function getRandomAngle() { return Math.round(1 + Math.random()) * getRandomDirection(); }
 const ball = {
-    xPos: GRAPH_WIDTH / 2,
-    yPos: GRAPH_HEIGHT / 2,
+    xPos: Math.floor(GRAPH_WIDTH / 2),
+    yPos: Math.floor(GRAPH_HEIGHT / 2),
     direction: getRandomDirection(),
     angle: getRandomAngle(),
     updatePosition: function() {
-        this.yPos += this.direction;
-        this.xPos += this.angle;
+        this.yPos = Math.floor(this.yPos + this.direction);
+        this.xPos = Math.floor(this.xPos + this.angle);
     },
     reset: function() {
-        this.xPos = GRAPH_WIDTH / 2;
-        this.yPos = GRAPH_HEIGHT / 2;
+        this.xPos = Math.floor(GRAPH_WIDTH / 2);
+        this.yPos = Math.floor(GRAPH_HEIGHT / 2);
         this.direction = getRandomDirection();
         this.angle = getRandomAngle();
     },
     bounce: function() {
         this.direction = -this.direction;
-        this.yPos += this.direction;
-        this.xPos -= this.angle;
+        this.yPos = Math.floor(this.yPos + this.direction);
+        this.xPos = Math.floor(this.xPos - this.angle);
         this.angle = getRandomAngle();
         this.updatePosition();
     },
     handleCollisions: function() {
         if (this.xPos < 0 || this.xPos >= GRAPH_WIDTH) {
             this.angle = -this.angle;
-            this.xPos += this.angle * 2;
+            this.xPos = Math.floor(this.xPos + this.angle * 2);
         }
-        if (this.yPos < 0 || this.yPos > GRAPH_HEIGHT) {
-            //this.reset();
+        if (this.yPos < 0 || this.yPos >= GRAPH_HEIGHT) {
+            this.reset();
+        }
+        if (this.yPos == player1.yPos && (this.xPos <= player1.xPos + 1) && (this.xPos >= player1.xPos - 1)) {
             this.bounce();
+            console.log("bounced");
         }
+    },
+    update: function() {
+        drawColor(this.xPos, this.yPos, 0);
+        this.updatePosition();
+        this.handleCollisions();
+        drawColor(this.xPos, this.yPos, 1 + Math.floor(Math.random() * 3));     
     }
-}
-
-const player1 = {
-    xPos: GRAPH_WIDTH / 2,
-    yPos: 0,
 }
 
 function addSquares() {
@@ -61,14 +86,11 @@ function updateSquares() {
         square.setAttribute('data-level', color);        
     }
 }
-function drawColor(x, y, level) {
-    gameTiles[Math.floor(y)][Math.floor(x)] = level;
-}
+
 function updateGame() {
-    drawColor(ball.xPos, ball.yPos, 0);
-    ball.updatePosition();
-    ball.handleCollisions();
-    drawColor(ball.xPos, ball.yPos, 1 + Math.floor(Math.random() * 3));
+    player1.update();
+    player2.update();
+    ball.update();
 
     /*
     for (var row = 0; row < GRAPH_HEIGHT; row++) {
