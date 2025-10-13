@@ -12,12 +12,14 @@ function getRandomDirection() { return (Math.random() < 0.5 ? -1 : 1)}
 function getRandomAngle() { return Math.round(1 + Math.random()) * getRandomDirection(); }
 
 var gameTiles = Array.from(Array(GRAPH_HEIGHT), () => new Array(GRAPH_WIDTH));
+var updatedTiles = [];
 
-function drawColor(x, y, level) {
-    const intX = Math.floor(x);
-    const intY = Math.floor(y);
+function drawColor(xIndex, yIndex, level) {
+    const intX = Math.floor(xIndex);
+    const intY = Math.floor(yIndex);
     if (intX >= 0 && intX < GRAPH_WIDTH && intY >= 0 && intY < GRAPH_HEIGHT) {
         gameTiles[intY][intX] = level;
+        updatedTiles.push({x: intX, y: intY});
     } else {
         console.log("Index out of bounds");
     }
@@ -137,12 +139,28 @@ function addSquares() {
 }
 
 function updateSquares() {
+    /*
     for (var i = 0; i < SQUARE_COUNT; i++) {
         const square = document.getElementById(`square${i}`);
         const row = i % GRAPH_HEIGHT;
         const column = Math.floor(i / GRAPH_HEIGHT);
         const color = gameTiles[row][column];
         square.setAttribute('data-level', color);        
+    }
+    */
+    updatedTiles.forEach(tile => {
+        const square = document.getElementById(`square${(tile.x - 1) * GRAPH_HEIGHT + tile.y}`);
+        const color = gameTiles[tile.y][tile.x];
+        square.setAttribute('data-level', color);
+    });
+    updatedTiles = [];
+}
+
+function squareDrawTest() {
+    for (var row = 0; row < GRAPH_HEIGHT; row++) {
+        for (var column = 0; column < GRAPH_WIDTH; column++) {
+            gameTiles[row][column] = Math.floor(Math.random() * 4);
+        }
     }
 }
 
@@ -151,18 +169,16 @@ function updateGame() {
     player2.update();
     ball.update();
 
-    /*
-    for (var row = 0; row < GRAPH_HEIGHT; row++) {
-        for (var column = 0; column < GRAPH_WIDTH; column++) {
-            gameTiles[row][column] = Math.floor(Math.random() * 4);
-        }
-    }
-    */
+    //squareDrawTest();
 }
 
-player1.draw(COLOR);
-player2.draw(COLOR);
-addSquares();
+function init() {
+    player1.draw(COLOR);
+    player2.draw(COLOR);
+    addSquares();
+}
+
+init();
 setInterval(() => {
     updateGame();
     updateSquares();
