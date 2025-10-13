@@ -65,7 +65,7 @@ const player1 = {
         }        
     },
     update: function() {
-        if ((this.ballComing() && this.xPos != ball.xPos) || this.distanceToBall() > 5) {
+        if ((this.ballComing() && this.xPos != ball.xPos) || this.distanceToBall() > 4) {
             this.draw(NO_COLOR);
             var moveDistance = this.calculateSpeed() * (this.xPos < ball.xPos ? 1 : -1);
             this.xPos += moveDistance;
@@ -149,7 +149,7 @@ function updateSquares() {
     }
     */
     updatedTiles.forEach(tile => {
-        const square = document.getElementById(`square${(tile.x - 1) * GRAPH_HEIGHT + tile.y}`);
+        const square = document.getElementById(`square${tile.x * GRAPH_HEIGHT + tile.y}`);
         const color = gameTiles[tile.y][tile.x];
         square.setAttribute('data-level', color);
     });
