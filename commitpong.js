@@ -34,19 +34,26 @@ const player1 = {
     ballComing: function() {
         return ball.direction == UP;
     },
+    distanceToBall: function() {
+        return Math.abs(ball.xPos - this.xPos);
+    },
     calculateSpeed: function() {
-        var ballSpeed = Math.abs(ball.angle);
-        var ballDirectionFactor = (this.xPos < ball.xPos && ball.angle == -1) || (this.xPos > ball.xPos && ball.angle == 1) ? -1 : 0;
-        var distanceFactor = 0;
-        var distance = Math.abs(ball.xpos - this.xpos);
-        if (distance > 1) {
-            distanceFactor += 1;
+        var speed = Math.abs(ball.angle);
+
+        if (this.distanceToBall() > 3) {
+            speed += 1;
         }
-        if (distance > 3) {
-            distanceFactor += 1;
+        if (this.distanceToBall() > 6) {
+            speed += 1;
+        }
+        
+        var ballMovingAway = (this.xPos < ball.xPos && ball.angle > 0) || (this.xPos > ball.xPos && ball.angle < 0);
+        if (ballMovingAway && this.distanceToBall() > 1) {
+            speed += 1;
         }
 
-        return ballSpeed + ballDirectionFactor + distanceFactor;
+        const speedCap = 3;
+        return Math.min(speed, speedCap);
     },
     checkBounds: function() {
         if (this.xPos < 1) {
@@ -56,7 +63,7 @@ const player1 = {
         }        
     },
     update: function() {
-        if (this.ballComing() && this.xPos != ball.xPos) {
+        if ((this.ballComing() && this.xPos != ball.xPos) || this.distanceToBall() > 5) {
             this.draw(NO_COLOR);
             var moveDistance = this.calculateSpeed() * (this.xPos < ball.xPos ? 1 : -1);
             this.xPos += moveDistance;
