@@ -6,7 +6,8 @@
 
 .months { grid-area: months; }
 .days { grid-area: days; }
-.squares { grid-area: squares; }
+.squares { grid-area: squares;}
+.squares li { border-radius: 2px;}
 
 .graph {
     display: inline-grid;
@@ -82,6 +83,11 @@ body {
 
 /* dark theme */
 @media (prefers-color-scheme: dark) {
+    .months { color: white; }
+    .days { color: white; }
+    body {
+        background-color: #0d1117;
+    }
     .squares li {
         background-color: #161b22;
     }

@@ -54,7 +54,7 @@ const player1 = {
             speed += 1;
         }
 
-        const speedCap = 3;
+        const speedCap = 4;
         return Math.min(speed, speedCap);
     },
     checkBounds: function() {
