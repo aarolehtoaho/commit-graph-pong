@@ -1,0 +1,13 @@
+{
+  "name": "commitpong",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node generateGif.js"
+  },
+  "dependencies": {
+    "puppeteer-core": "^22.0.0",
+    "chrome-aws-lambda": "^10.1.0",
+    "gifencoder": "^2.0.1",
+    "png-js": "^0.3.1"
+  }
+}
