@@ -28,6 +28,7 @@ await page.setViewport({width: WIDTH, height: HEIGHT});
 
 await sleep(1000); // Wait game to render
 
+fs.mkdirSync("frames", { recursive: true });
 for (var frame = 0; frame < TOTAL_FRAMES; frame++) {
     await page.screenshot({ path: `frames/frame${frame}.png` });
     await sleep(TIME_BETWEEN_FRAMES);
@@ -35,7 +36,7 @@ for (var frame = 0; frame < TOTAL_FRAMES; frame++) {
 
 await browser.close();
 
-const gif = GIFEncoder(WIDTH, HEIGHT);
+const gif = new GIFEncoder(WIDTH, HEIGHT);
 gif.start();
 gif.setRepeat(0);
 gif.setDelay(TIME_BETWEEN_FRAMES);
@@ -49,4 +50,5 @@ for (let frame = 0; frame < TOTAL_FRAMES; frame++) {
 }
 
 gif.finish();
+fs.mkdirSync("public", { recursive: true });
 fs.writeFileSync('public/game.gif', gif.out.getData());
