@@ -6,7 +6,8 @@
     "build": "node generateGif.js"
   },
   "dependencies": {
-    "puppeteer": "^23.0.0",
+    "puppeteer-core": "^10.1.0",
+    "chrome-aws-lambda": "^10.1.0",
     "gif-encoder-2": "^1.0.5",
     "upng-js": "^2.1.0"
   }

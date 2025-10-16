@@ -1,4 +1,5 @@
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
+import chromium from 'chrome-aws-lambda';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
@@ -15,7 +16,12 @@ const HEIGHT = 201 + 10;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PATH = 'file://' + path.join(__dirname, 'index.html');
 
-const browser = await puppeteer.launch();
+const browser = await puppeteer.launch({
+  args: chromium.args,
+  defaultViewport: chromium.defaultViewport,
+  executablePath: await chromium.executablePath,
+  headless: chromium.headless,
+});
 const page = await browser.newPage();
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
