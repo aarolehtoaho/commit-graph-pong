@@ -2,5 +2,10 @@
   command = "npm run build"
   publish = "public"
 
+[build.environment]
+  NODE_VERSION = "22"
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
+  NPM_FLAGS = "--prefer-offline --no-audit"
+
 [functions]
   node_bundler = "esbuild"
