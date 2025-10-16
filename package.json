@@ -8,6 +8,6 @@
     "puppeteer-core": "^10.1.0",
     "chrome-aws-lambda": "^10.1.0",
     "gifencoder": "^2.0.1",
-    "png-js": "^1.0.0"
+    "upng-js": "^2.1.0"
   }
 }

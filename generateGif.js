@@ -3,7 +3,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import { GIFEncoder, quantize, applyPalette } from 'gifencoder';
 import fs from 'fs';
-import PNG from 'png-js'
+import UPNG from 'upng-js';
 
 const TIME = 10;
 const FPS = 2.5;
@@ -34,9 +34,7 @@ await browser.close();
 const gif = GIFEncoder({ width: WIDTH, height: HEIGHT });
 
 for (let frame = 0; frame < TOTAL_FRAMES; frame++) {
-    const buffer = fs.readFileSync(`frames/frame${frame}.png`);
-    const png = new PNG(buffer);
-    const data = png.decode();
+    const data = UPNG.toRGBA8(UPNG.decode(fs.readFileSync(`frames/frame${frame}.png`)))[0];
 
     const palette = quantize(data, 256);
     const indexData = applyPalette(data, palette);
