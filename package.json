@@ -2,12 +2,15 @@
   "name": "commitpong",
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "build": "node generateGif.js"
   },
   "dependencies": {
-    "puppeteer-core": "^10.1.0",
-    "chrome-aws-lambda": "^10.1.0",
+    "puppeteer-core": "^24.25.0",
+    "chrome-aws-lambda": "^67.0.3372",
     "gif-encoder-2": "^1.0.5",
     "upng-js": "^2.1.0"
   }
