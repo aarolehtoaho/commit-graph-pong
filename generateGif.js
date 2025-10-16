@@ -4,13 +4,14 @@ import path from 'path';
 import fs from 'fs';
 import GIFEncoder from 'gif-encoder-2';
 import UPNG from 'upng-js';
+import { createCanvas, loadImage } from 'canvas';
 
 const TIME = 10;
 const FPS = 2.5;
 const TOTAL_FRAMES = TIME * FPS;
 const TIME_BETWEEN_FRAMES = 1000 / FPS;
-const WIDTH = 1116 + 10;
-const HEIGHT = 201 + 10;
+const WIDTH = 1170;
+const HEIGHT = 257;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PATH = 'file://' + path.join(__dirname, 'index.html');
@@ -42,11 +43,16 @@ gif.setRepeat(0);
 gif.setDelay(TIME_BETWEEN_FRAMES);
 gif.setQuality(10);
 
-for (let frame = 0; frame < TOTAL_FRAMES; frame++) {
-  const buffer = fs.readFileSync(`frames/frame${frame}.png`);
-  const rgbaData = UPNG.toRGBA8(UPNG.decode(buffer))[0];
+const canvas = createCanvas(WIDTH, HEIGHT);
+const ctx = canvas.getContext('2d');
 
-  gif.addFrame(rgbaData);
+for (let frame = 0; frame < TOTAL_FRAMES; frame++) {
+    const img = await loadImage(`frames/frame${frame}.png`);
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    ctx.drawImage(img, 0, 0, WIDTH, HEIGHT);
+
+    const imageData = ctx.getImageData(0, 0, WIDTH, HEIGHT);
+    gif.addFrame(imageData.data);
 }
 
 gif.finish();
