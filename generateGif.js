@@ -1,8 +1,8 @@
 import puppeteer from 'puppeteer-core';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { GIFEncoder, quantize, applyPalette } from 'gifencoder';
 import fs from 'fs';
+import GIFEncoder from 'gif-encoder-2';
 import UPNG from 'upng-js';
 
 const TIME = 10;
@@ -11,6 +11,7 @@ const TOTAL_FRAMES = TIME * FPS;
 const TIME_BETWEEN_FRAMES = 1000 / FPS;
 const WIDTH = 1116 + 10;
 const HEIGHT = 201 + 10;
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PATH = 'file://' + path.join(__dirname, 'index.html');
 
@@ -31,16 +32,18 @@ for (var frame = 0; frame < TOTAL_FRAMES; frame++) {
 
 await browser.close();
 
-const gif = GIFEncoder({ width: WIDTH, height: HEIGHT });
+const gif = GIFEncoder(WIDTH, HEIGHT);
+gif.start();
+gif.setRepeat(0);
+gif.setDelay(TIME_BETWEEN_FRAMES);
+gif.setQuality(10);
 
 for (let frame = 0; frame < TOTAL_FRAMES; frame++) {
-    const data = UPNG.toRGBA8(UPNG.decode(fs.readFileSync(`frames/frame${frame}.png`)))[0];
+  const buffer = fs.readFileSync(`frames/frame${frame}.png`);
+  const rgbaData = UPNG.toRGBA8(UPNG.decode(buffer))[0];
 
-    const palette = quantize(data, 256);
-    const indexData = applyPalette(data, palette);
-
-    gif.writeFrame(indexData, WIDTH, HEIGHT, { palette });
+  gif.addFrame(rgbaData);
 }
 
 gif.finish();
-fs.writeFileSync('public/game.gif', gif.bytes());
+fs.writeFileSync('public/game.gif', gif.out.getData());
