@@ -1,11 +1,9 @@
 [build]
-  command = "npm run build"
-  publish = "public"
+    command = "npx puppeteer browsers install chrome && npm run build"
+    publish = "public"
 
 [build.environment]
-  NODE_VERSION = "22"
-  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
-  NPM_FLAGS = "--prefer-offline --no-audit"
+    NODE_VERSION = "22"
 
 [functions]
-  node_bundler = "esbuild"
+    node_bundler = "esbuild"
