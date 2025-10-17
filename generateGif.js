@@ -3,10 +3,10 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
 import GIFEncoder from 'gif-encoder-2';
-import UPNG from 'upng-js';
+//import UPNG from 'upng-js';
 import { createCanvas, loadImage } from 'canvas';
 
-const TIME = 10;
+const TIME = 15;
 const FPS = 2.5;
 const TOTAL_FRAMES = TIME * FPS;
 const TIME_BETWEEN_FRAMES = 1000 / FPS;
@@ -22,11 +22,11 @@ const browser = await puppeteer.launch({
 });
 const page = await browser.newPage();
 
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-
 await page.goto(PATH);
 await page.setViewport({width: WIDTH, height: HEIGHT});
+await page.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 await sleep(1000); // Wait game to render
 
 fs.mkdirSync("frames", { recursive: true });
